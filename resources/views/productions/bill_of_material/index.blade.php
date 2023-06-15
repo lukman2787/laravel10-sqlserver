@@ -58,28 +58,28 @@
                                         <div class="form-group row">
                                             <label for="" class="col-sm-4 col-form-label">Description</label>
                                             <div class="col-sm-8">
-                                                <input type="text" class="form-control form-control-sm" id="item_description" readonly>
+                                                <input type="text" class="form-control form-control-sm" id="ItemDescription" readonly>
                                             </div>
                                         </div>
                                         <div class="form-group row">
                                             <label for="" class="col-sm-4 col-form-label">Desc. In Foreign Lang</label>
                                             <div class="col-sm-8">
-                                                <textarea type="text" class="form-control form-control-sm" id="" readonly></textarea>
+                                                <textarea type="text" class="form-control form-control-sm" id="FrgnName" readonly></textarea>
                                             </div>
                                         </div>
                                         <div class="form-group row">
                                             <label for="" class="col-sm-4 col-form-label">Item Group</label>
                                             <div class="col-sm-8">
-                                                <input type="text" class="form-control form-control-sm" id="" readonly>
+                                                <input type="text" class="form-control form-control-sm" id="GroupName" readonly>
                                             </div>
                                         </div>
                                         <div class="form-group row">
                                             <label for="" class="col-sm-4 col-form-label">Unit Price</label>
                                             <div class="col-sm-6">
-                                                <input type="text" class="form-control form-control-sm" id="" readonly>
+                                                <input type="text" class="form-control form-control-sm" id="price" readonly>
                                             </div>
                                             <div class="col-sm-2">
-                                                <input type="text" class="form-control form-control-sm" id="" readonly>
+                                                <input type="text" class="form-control form-control-sm" id="curr" readonly>
                                             </div>
                                         </div>
                                     </div>
@@ -87,31 +87,31 @@
                                         <div class="form-group row">
                                             <label for="" class="col-sm-4 col-form-label">Dimension</label>
                                             <div class="col-sm-8">
-                                                <input type="text" class="form-control form-control-sm" id="" readonly>
+                                                <input type="text" class="form-control form-control-sm" id="u_dimension" readonly>
                                             </div>
                                         </div>
                                         <div class="form-group row">
                                             <label for="" class="col-sm-4 col-form-label">Material</label>
                                             <div class="col-sm-8">
-                                                <input type="text" class="form-control form-control-sm" id="" readonly>
+                                                <input type="text" class="form-control form-control-sm" id="u_material" readonly>
                                             </div>
                                         </div>
                                         <div class="form-group row">
                                             <label for="" class="col-sm-4 col-form-label">Color</label>
                                             <div class="col-sm-8">
-                                                <input type="text" class="form-control form-control-sm" id="" readonly>
+                                                <input type="text" class="form-control form-control-sm " id="u_color" readonly>
                                             </div>
                                         </div>
                                         <div class="form-group row">
                                             <label for="" class="col-sm-4 col-form-label">Picture Name</label>
                                             <div class="col-sm-8">
-                                                <input type="text" class="form-control form-control-sm" id="" readonly>
+                                                <input type="text" class="form-control form-control-sm" id="PictureName" readonly>
                                             </div>
                                         </div>
                                         <div class="form-group row">
                                             <label for="" class="col-sm-4 col-form-label">Picture Path</label>
                                             <div class="col-sm-8">
-                                                <input type="text" class="form-control form-control-sm" id="" value="X:\java\gbsap\Pict" readonly>
+                                                <input type="text" class="form-control form-control-sm" id="PicturePath" value="X:\java\gbsap\Pict" readonly>
                                             </div>
                                         </div>
                                     </div>
@@ -143,7 +143,15 @@
                                                 <div class="tab-pane fade show active" id="custom-tabs-four-home" role="tabpanel" aria-labelledby="custom-tabs-four-home-tab">
                                                     <div class="row">
                                                         <div class="col-12">
-                                                            {{-- <table id="gridview-bom" class="table table-sm table-bordered table-striped" cellspacing="0" style="width:100%">
+
+                                                        </div>
+                                                        <!-- /.col -->
+                                                    </div>
+                                                </div>
+                                                <div class="tab-pane fade" id="custom-tabs-four-profile" role="tabpanel" aria-labelledby="custom-tabs-four-profile-tab">
+                                                    <div class="row">
+                                                        <div class="col-12">
+                                                            <table id="gridview-bom" class="table table-sm table-bordered table-striped" cellspacing="0" style="width:100%">
                                                                 <thead>
                                                                     <tr>
                                                                         <th>No</th>
@@ -157,24 +165,6 @@
                                                                         <th>Dept</th>
                                                                         <th>Bom type</th>
                                                                         <th>Group Name</th>
-                                                                    </tr>
-                                                                </thead>
-                                                            </table> --}}
-                                                        </div>
-                                                        <!-- /.col -->
-                                                    </div>
-                                                </div>
-                                                <div class="tab-pane fade" id="custom-tabs-four-profile" role="tabpanel" aria-labelledby="custom-tabs-four-profile-tab">
-                                                    <div class="row">
-                                                        <div class="col-12">
-                                                            <table id="gridview-bom" class="table table-sm table-bordered table-striped" cellspacing="0" style="width:100%">
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th>No</th>
-                                                                        <th>Vendor Card</th>
-                                                                        <th>Vendor Name</th>
-                                                                        <th>Vendor Type</th>
-                                                                        <th>Group Code</th>
                                                                     </tr>
                                                                 </thead>
                                                             </table>
@@ -239,6 +229,10 @@
 
                 $('body').addClass('sidebar-collapse');
 
+                $(function() {
+                    bsCustomFileInput.init();
+                });
+
                 function fill_grideview_bom(item_code = '') {
                     let table_data = $('#gridview-bom').DataTable({
                         processing: true,
@@ -255,20 +249,20 @@
                                 name: 'DT_RowIndex'
                             },
                             {
-                                data: 'ItemCode',
-                                name: 'ItemCode'
+                                data: 'code',
+                                name: 'code'
                             },
                             {
-                                data: 'ItemName',
-                                name: 'ItemName'
+                                data: 'father',
+                                name: 'father'
                             },
                             {
-                                data: 'FrgnName',
-                                name: 'FrgnName'
+                                data: 'childnum',
+                                name: 'childnum'
                             },
                             {
-                                data: 'ItmsGrpCod',
-                                name: 'ItmsGrpCod'
+                                data: 'Quantity',
+                                name: 'Quantity'
                             },
                         ],
                         columnDefs: [{
@@ -300,7 +294,6 @@
             });
 
             function bom_item_description(item_code) {
-
                 $.ajax({
                     url: "{{ route('bom-item.show') }}",
                     type: "POST",
@@ -308,20 +301,25 @@
                         item_code: item_code,
                     },
                     dataType: 'json',
-                    success: function(data) {
+                    success: function(result) {
                         // $('#item_description').val(data.ItemName);
-                        console.log(data);
-                        console.log(data.code);
+                        $.each(result.item_description, function(key, value) {
+                            $('#ItemDescription').val(value.ItemName);
+                            $('#FrgnName').val(value.FrgnName);
+                            $('#GroupName').val(value.GroupName);
+                            $('#price').val(value.Price);
+                            $('#curr').val(value.Curr);
+                            $('#u_dimension').val(value.U_Dmsion);
+                            $('#u_material').val(value.U_Material);
+                            $('#u_color').val(value.U_Color);
+                            $('#PictureName').val(value.PicturName);
+                        });
                     },
                     error: function(xhr, textStatus, errorThrown) {
                         console.log('Error: ' + errorThrown);
                     }
                 });
             }
-
-            // $(function() {
-            //     bsCustomFileInput.init();
-            // });
         </script>
     @endslot
 </x-app-layout>
