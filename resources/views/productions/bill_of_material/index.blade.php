@@ -1,5 +1,7 @@
 <x-app-layout>
     @slot('custom_style')
+        <!-- Treeview -->
+        <link rel="stylesheet" href="/plugins/bootstrap-treeview/css/bootstrap-treeview.css">
         <!-- DataTables -->
         <link rel="stylesheet" href="/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
         <link rel="stylesheet" href="/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
@@ -143,7 +145,7 @@
                                                 <div class="tab-pane fade show active" id="custom-tabs-four-home" role="tabpanel" aria-labelledby="custom-tabs-four-home-tab">
                                                     <div class="row">
                                                         <div class="col-12">
-
+                                                            <div id="treeview"></div>
                                                         </div>
                                                         <!-- /.col -->
                                                     </div>
@@ -205,7 +207,9 @@
     @slot('custom_script')
         <!-- bs-custom-file-input -->
         <script src="/plugins/bs-custom-file-input/bs-custom-file-input.min.js"></script>
-        <!-- DataTables  & Plugins -->
+        <!-- Treeview Js -->
+        <script src="/plugins/bootstrap-treeview/js/bootstrap-treeview.js"></script>
+        <!-- DataTables & Plugins -->
         <script src="/plugins/datatables/jquery.dataTables.min.js"></script>
         <script src="/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
         <script src="/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
@@ -233,6 +237,43 @@
                     bsCustomFileInput.init();
                 });
 
+                $('#treeview').treeview({
+                    data: contoh()
+                });
+
+                function contoh() {
+                    var tree = [{
+                            text: "Parent 1",
+                            nodes: [{
+                                    text: "Child 1",
+                                    nodes: [{
+                                            text: "Grandchild 1"
+                                        },
+                                        {
+                                            text: "Grandchild 2"
+                                        }
+                                    ]
+                                },
+                                {
+                                    text: "Child 2"
+                                }
+                            ]
+                        },
+                        {
+                            text: "Parent 2"
+                        },
+                        {
+                            text: "Parent 3"
+                        },
+                        {
+                            text: "Parent 4"
+                        },
+                        {
+                            text: "Parent 5"
+                        }
+                    ];
+                }
+
                 function fill_grideview_bom(item_code = '') {
                     let table_data = $('#gridview-bom').DataTable({
                         processing: true,
@@ -249,16 +290,16 @@
                                 name: 'DT_RowIndex'
                             },
                             {
-                                data: 'code',
-                                name: 'code'
+                                data: 'Item',
+                                name: 'Item'
                             },
                             {
-                                data: 'father',
-                                name: 'father'
+                                data: 'ItemDescription',
+                                name: 'ItemDescription'
                             },
                             {
-                                data: 'childnum',
-                                name: 'childnum'
+                                data: 'UoM',
+                                name: 'UoM'
                             },
                             {
                                 data: 'Quantity',
@@ -279,9 +320,10 @@
                         bom_item_description(item_code);
                         $('#gridview-bom').DataTable().destroy();
                         fill_grideview_bom(item_code);
+                        fill_treeview(item_code)
                     } else {
                         alert('Select Item Code filter option');
-                        toastr.error(response.deleted);
+
                     }
                 });
 
@@ -292,6 +334,25 @@
                 });
 
             });
+
+            function fill_treeview(item_code) {
+                $.ajax({
+                    url: "{{ route('bom-treeview.show') }}",
+                    type: "POST",
+                    data: {
+                        item_code: item_code,
+                    },
+                    dataType: 'json',
+                    success: function(result) {
+                        $('#treeview').treeview({
+                            data: getTree()
+                        });
+                    },
+                    error: function(xhr, textStatus, errorThrown) {
+                        console.log('Error: ' + errorThrown);
+                    }
+                });
+            }
 
             function bom_item_description(item_code) {
                 $.ajax({
@@ -319,6 +380,41 @@
                         console.log('Error: ' + errorThrown);
                     }
                 });
+            }
+
+            function getTree() {
+                // Some logic to retrieve, or generate tree structure
+                var data = [{
+                        text: "Parent 1",
+                        nodes: [{
+                                text: "Child 1",
+                                nodes: [{
+                                        text: "Grandchild 1"
+                                    },
+                                    {
+                                        text: "Grandchild 2"
+                                    }
+                                ]
+                            },
+                            {
+                                text: "Child 2"
+                            }
+                        ]
+                    },
+                    {
+                        text: "Parent 2"
+                    },
+                    {
+                        text: "Parent 3"
+                    },
+                    {
+                        text: "Parent 4"
+                    },
+                    {
+                        text: "Parent 5"
+                    }
+                ];
+                return data;
             }
         </script>
     @endslot
