@@ -6,7 +6,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Staudenmeir\EloquentRecursive\RecursiveTrait;
-// use Staudenmeir\LaravelCte\Query\Builder;
+
+use Staudenmeir\LaravelCte\Query\Builder;
 
 class BomsapController extends Controller
 {
@@ -15,8 +16,10 @@ class BomsapController extends Controller
      */
     public function index(request $request)
     {
-        $results = DB::connection('sqlsrv')->table(function ($query) {
-            $query->withRecursiveExpression('Dr', function ($recursiveQuery) {
+        $item_father = 'J22619-TWRG373-PJW';
+        $result = DB::connection('sqlsrv')->table(function ($query) {
+            $query->withRecursiveExpression('Dr(depth,lineage,code,Father,childnum,qty,Whse,Curr,Price)', function ($recursiveQuery) {
+                $item_father = 'J22619-TWRG373-PJW';
                 $recursiveQuery->select([
                     DB::raw("CAST(2 AS INTEGER) AS depth"),
                     DB::raw("((CASE WHEN len(ITT1.childnum)=2 THEN '1' ELSE '10' END) + CAST(ITT1.childnum AS VARCHAR(MAX)) + '-') AS lineage"),
@@ -29,7 +32,7 @@ class BomsapController extends Controller
                     'ITT1.Price'
                 ])
                     ->from('ITT1')
-                    ->where('ITT1.father', 'J21067CRS1-CN3B507PJW')
+                    ->where('ITT1.father', DB::raw('"' . $item_father . '"'))
                     ->unionAll(function ($unionQuery) {
                         $unionQuery->select([
                             DB::raw('Dr.depth'),
@@ -51,7 +54,7 @@ class BomsapController extends Controller
                     'd.code as Item',
                     'i1.ItemName as ItemDescription',
                     'i1.InvntryUom as UoM',
-                    'd.Quantity as Quantity',
+                    'd.Quantity',
                     'd.Warehouse',
                     'd.Currency',
                     'd.Price',
@@ -61,14 +64,18 @@ class BomsapController extends Controller
                 ])
                 ->from('Dr as d')
                 ->join('OITM as i1', 'd.code', '=', 'i1.ItemCode')
-                ->orderBy('lineage')->get();
+                ->orderBy('lineage');
         });
-
+        // $results = $result->get();
         // dd($results);
+        // echo '<pre>';
+        // print_r($tree);
+        // echo '</pre>';
 
-
+        // return view('productions.bill_of_material.index', ['results' => $results]);
         return view('productions.bill_of_material.index');
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -79,6 +86,8 @@ class BomsapController extends Controller
             if (!empty($request->filter_item)) {
                 $results = DB::connection('sqlsrv')->table(function ($query) {
                     $query->withRecursiveExpression('Dr', function ($recursiveQuery) {
+                        // $item_father = $request->filter_item;
+                        $item_father = 'J22619-TWRG373-PJW';
                         $recursiveQuery->select([
                             DB::raw("CAST(2 AS INTEGER) AS depth"),
                             DB::raw("((CASE WHEN len(ITT1.childnum)=2 THEN '1' ELSE '10' END) + CAST(ITT1.childnum AS VARCHAR(MAX)) + '-') AS lineage"),
@@ -91,7 +100,8 @@ class BomsapController extends Controller
                             'ITT1.Price'
                         ])
                             ->from('ITT1')
-                            ->where('ITT1.father', 'J21067CRS1-CN3B507PJW')
+                            // ->where('ITT1.father', DB::raw("'" . $item_father . "'"))
+                            ->where('ITT1.father', DB::raw("' . $item_father . '"))
                             ->unionAll(function ($unionQuery) {
                                 $unionQuery->select([
                                     DB::raw('Dr.depth'),
@@ -113,7 +123,7 @@ class BomsapController extends Controller
                             'd.code as Item',
                             'i1.ItemName as ItemDescription',
                             'i1.InvntryUom as UoM',
-                            'd.Quantity as Quantity',
+                            'd.Quantity',
                             'd.Warehouse',
                             'd.Currency',
                             'd.Price',
@@ -123,13 +133,13 @@ class BomsapController extends Controller
                         ])
                         ->from('Dr as d')
                         ->join('OITM as i1', 'd.code', '=', 'i1.ItemCode')
-                        ->orderBy('lineage')->get();
+                        ->orderBy('lineage');
                 });
-
-                // $results = $query->get();
             }
+            $data = $results->get();
 
-            return datatables()::of($results)
+
+            return datatables()::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
                     $check_bom = '<label class="container-checkbox">

@@ -39,7 +39,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 
     Route::post('fetch_bom_treeview', [BomsapController::class, 'show_bom_treeview'])->name('bom-treeview.show');
-    Route::get('fetch_bill_of_material', [BomsapController::class, 'fetch_bill_of_material'])->name('get_bom');
+    Route::post('fetch_bill_of_material', [BomsapController::class, 'fetch_bill_of_material'])->name('get_bom');
     Route::post('bom/item_description', [BomsapController::class, 'show_item_description'])->name('bom-item.show');
     Route::resource('production/bill_of_material', BomsapController::class);
 });

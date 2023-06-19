@@ -169,6 +169,13 @@
                                                                         <th>Group Name</th>
                                                                     </tr>
                                                                 </thead>
+                                                                <tbody>
+                                                                    {{-- @foreach ($results as $data)
+                                                                        <tr>
+                                                                            <td>{{ $data->Quantity }}</td>
+                                                                        </tr>
+                                                                    @endforeach --}}
+                                                                </tbody>
                                                             </table>
                                                         </div>
                                                         <!-- /.col -->
