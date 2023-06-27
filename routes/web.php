@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BomsapController;
+use App\Http\Controllers\CostAnalysisController;
 use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
@@ -38,8 +39,12 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('home', fn () => view('home'))->name('user.page');
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 
+    Route::get('production/bill_of_material',  [BomsapController::class, 'index'])->name('bom-sap.index');
     Route::post('fetch_bom_treeview', [BomsapController::class, 'show_bom_treeview'])->name('bom-treeview.show');
-    Route::post('fetch_bill_of_material', [BomsapController::class, 'fetch_bill_of_material'])->name('get_bom');
+    Route::get('fetch_bill_of_material', [BomsapController::class, 'fetch_bill_of_material'])->name('get_bom');
     Route::post('bom/item_description', [BomsapController::class, 'show_item_description'])->name('bom-item.show');
-    Route::resource('production/bill_of_material', BomsapController::class);
+
+    Route::post('production/analysis_tree',  [CostAnalysisController::class, 'get_parent_bom'])->name('cost-analysis.parent');
+    Route::get('production/cost-analysis',  [CostAnalysisController::class, 'index'])->name('cost-analysis.index');
+    Route::get('fetch_sales_order', [CostAnalysisController::class, 'fetch_sales_order'])->name('sales_order.fetch');
 });

@@ -64,9 +64,9 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="pages/mailbox/compose.html" class="nav-link">
+                            <a href="{{ url('production/cost-analysis') }}" class="nav-link">
                                 <i class="far fa-sliders nav-icon"></i>
-                                <p>Forecast BoM </p>
+                                <p>Cost Analysis </p>
                             </a>
                         </li>
                     </ul>

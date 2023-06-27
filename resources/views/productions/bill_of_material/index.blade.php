@@ -146,6 +146,7 @@
                                                     <div class="row">
                                                         <div class="col-12">
                                                             <div id="treeview"></div>
+
                                                         </div>
                                                         <!-- /.col -->
                                                     </div>
@@ -169,13 +170,6 @@
                                                                         <th>Group Name</th>
                                                                     </tr>
                                                                 </thead>
-                                                                <tbody>
-                                                                    {{-- @foreach ($results as $data)
-                                                                        <tr>
-                                                                            <td>{{ $data->Quantity }}</td>
-                                                                        </tr>
-                                                                    @endforeach --}}
-                                                                </tbody>
                                                             </table>
                                                         </div>
                                                         <!-- /.col -->
@@ -244,42 +238,9 @@
                     bsCustomFileInput.init();
                 });
 
-                $('#treeview').treeview({
-                    data: contoh()
-                });
-
-                function contoh() {
-                    var tree = [{
-                            text: "Parent 1",
-                            nodes: [{
-                                    text: "Child 1",
-                                    nodes: [{
-                                            text: "Grandchild 1"
-                                        },
-                                        {
-                                            text: "Grandchild 2"
-                                        }
-                                    ]
-                                },
-                                {
-                                    text: "Child 2"
-                                }
-                            ]
-                        },
-                        {
-                            text: "Parent 2"
-                        },
-                        {
-                            text: "Parent 3"
-                        },
-                        {
-                            text: "Parent 4"
-                        },
-                        {
-                            text: "Parent 5"
-                        }
-                    ];
-                }
+                // $('#treeview').treeview({
+                //     data: getTree()
+                // });
 
                 function fill_grideview_bom(item_code = '') {
                     let table_data = $('#gridview-bom').DataTable({
@@ -292,6 +253,13 @@
                                 filter_item: item_code,
                             }
                         },
+                        // createdRow: function(row, data, dataIndex) {
+                        //     if (data.Price !== undefined) {
+                        //         // 4 here is the cell number, it starts from 0 where this number should appear
+                        //         $(row).find('td:eq(7)').html(formatNumber(data.Price));
+                        //     }
+                        // },
+                        // pageLength: 25,
                         columns: [{
                                 data: 'DT_RowIndex',
                                 name: 'DT_RowIndex'
@@ -309,8 +277,32 @@
                                 name: 'UoM'
                             },
                             {
-                                data: 'Quantity',
-                                name: 'Quantity'
+                                data: 'qty',
+                                name: 'qty'
+                            },
+                            {
+                                data: 'Whse',
+                                name: 'Whse'
+                            },
+                            {
+                                data: 'Curr',
+                                name: 'Curr'
+                            },
+                            {
+                                data: 'Price',
+                                name: 'Price'
+                            },
+                            {
+                                data: 'Depth',
+                                name: 'Depth'
+                            },
+                            {
+                                data: 'BOMType',
+                                name: 'BOMType'
+                            },
+                            {
+                                data: 'GroupName',
+                                name: 'GroupName'
                             },
                         ],
                         columnDefs: [{
@@ -322,7 +314,7 @@
 
                 $('#filter').click(function() {
                     var item_code = $('#item_code').val();
-
+                    // alert(item_code);
                     if (item_code != '') {
                         bom_item_description(item_code);
                         $('#gridview-bom').DataTable().destroy();
@@ -342,7 +334,11 @@
 
             });
 
-            function fill_treeview(item_code) {
+            function formatNumber(num) {
+                return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.')
+            }
+
+            function fill_treeview(item_code = '') {
                 $.ajax({
                     url: "{{ route('bom-treeview.show') }}",
                     type: "POST",
@@ -352,7 +348,7 @@
                     dataType: 'json',
                     success: function(result) {
                         $('#treeview').treeview({
-                            data: getTree()
+                            data: result,
                         });
                     },
                     error: function(xhr, textStatus, errorThrown) {
