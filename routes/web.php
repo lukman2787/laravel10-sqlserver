@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BomsapController;
 use App\Http\Controllers\CostAnalysisController;
+use App\Http\Controllers\PictureController;
 use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
@@ -47,4 +48,6 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('production/analysis_tree',  [CostAnalysisController::class, 'get_parent_bom'])->name('cost-analysis.parent');
     Route::get('production/cost-analysis',  [CostAnalysisController::class, 'index'])->name('cost-analysis.index');
     Route::get('fetch_sales_order', [CostAnalysisController::class, 'fetch_sales_order'])->name('sales_order.fetch');
+
+    Route::post('api/load_single_picture',  [PictureController::class, 'load_single_picture'])->name('single-picture.load');
 });

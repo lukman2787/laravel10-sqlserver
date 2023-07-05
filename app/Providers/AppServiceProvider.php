@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Maatwebsite\Excel\Classes\Excel;
 
 class AppServiceProvider extends ServiceProvider
 {

@@ -67,7 +67,15 @@ return [
             'root' => env('FTP_ROOT'),
             'ssl'      => env('FTP_SSL', false),
             'timeout'  => env('FTP_TIMEOUT', 30)
-        ]
+        ],
+
+        'images' => [
+            'driver' => 'local',
+            // 'root' => storage_path('app/images'),
+            'root' => storage_path('X:/java/gbsap/pict/'),
+            'url' => env('APP_URL') . '/storage/images',
+            'visibility' => 'public',
+        ],
 
     ],
 
@@ -85,6 +93,5 @@ return [
     'links' => [
         public_path('storage') => storage_path('app/public'),
     ],
-
 
 ];

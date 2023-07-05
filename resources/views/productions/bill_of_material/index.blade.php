@@ -347,8 +347,10 @@
                     },
                     dataType: 'json',
                     success: function(result) {
+                        console.log(result);
                         $('#treeview').treeview({
                             data: result,
+                            // levels: 1, // Jumlah level yang ingin ditampilkan
                         });
                     },
                     error: function(xhr, textStatus, errorThrown) {
@@ -383,41 +385,6 @@
                         console.log('Error: ' + errorThrown);
                     }
                 });
-            }
-
-            function getTree() {
-                // Some logic to retrieve, or generate tree structure
-                var data = [{
-                        text: "Parent 1",
-                        nodes: [{
-                                text: "Child 1",
-                                nodes: [{
-                                        text: "Grandchild 1"
-                                    },
-                                    {
-                                        text: "Grandchild 2"
-                                    }
-                                ]
-                            },
-                            {
-                                text: "Child 2"
-                            }
-                        ]
-                    },
-                    {
-                        text: "Parent 2"
-                    },
-                    {
-                        text: "Parent 3"
-                    },
-                    {
-                        text: "Parent 4"
-                    },
-                    {
-                        text: "Parent 5"
-                    }
-                ];
-                return data;
             }
         </script>
     @endslot

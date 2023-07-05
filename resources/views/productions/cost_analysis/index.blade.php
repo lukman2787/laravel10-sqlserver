@@ -41,9 +41,9 @@
                                 <li class="nav-item">
                                     <a class="nav-link active" id="custom-tabs-four-home-tab" data-toggle="pill" href="#custom-tabs-four-home" role="tab" aria-controls="custom-tabs-four-home" aria-selected="true">Tree View Cost Analysis</a>
                                 </li>
-                                {{-- <li class="nav-item">
-                                    <a class="nav-link" id="custom-tabs-four-profile-tab" data-toggle="pill" href="#custom-tabs-four-profile" role="tab" aria-controls="custom-tabs-four-profile" aria-selected="false">expand</a>
-                                </li> --}}
+                                <li class="nav-item">
+                                    <a class="nav-link" id="custom-tabs-four-profile-tab" data-toggle="pill" href="#custom-tabs-four-profile" role="tab" aria-controls="custom-tabs-four-profile" aria-selected="false">Actual Cost</a>
+                                </li>
                                 {{-- <li class="nav-item">
                                     <a class="nav-link" id="custom-tabs-four-messages-tab" data-toggle="pill" href="#custom-tabs-four-messages" role="tab" aria-controls="custom-tabs-four-messages" aria-selected="false"></a>
                                 </li> --}}
@@ -72,7 +72,7 @@
                                         <button type="button" class="btn btn-warning btn-sm mb-2" id="btn-reset"><i class="fas fa-sync fa-fw"></i></button>
                                     </form>
                                     <div class="row">
-                                        <div class="col-12">
+                                        <div class="col-xl-8">
                                             <div class="table-responsive">
                                                 <table id="socost-data" class="table table-sm table-bordered table-striped" cellspacing="0" style="width:100%">
                                                     <thead>
@@ -89,6 +89,21 @@
                                                 </table>
                                             </div>
                                         </div>
+                                        <div class="col-xl-4">
+                                            <div id="card-image" class="d-none">
+                                                <div class="card-header">Item Picture</div>
+                                                <div class="card mb-2 bg-gradient-dark">
+                                                    <div id="view-picture">
+                                                        <img class="card-img-top" src="/storage/no-image-item.png" alt="Product Photo">
+                                                    </div>
+                                                    <div class="card-img-overlay d-flex flex-column justify-content-end">
+                                                        <h5 class="card-title text-primary"></h5>
+                                                        <p class="card-text pb-2 pt-1"></p>
+                                                        <a href="#"></a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                         <!-- /.col -->
                                     </div>
                                     <div id="treeview"></div>
@@ -102,8 +117,27 @@
                                                         <div class="card-header">
                                                             <h3 class="card-title"><span id=""></span></h3>
                                                         </div>
-
                                                         <div class="card-body p-0">
+                                                            <table class="table table-hover">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Item</th>
+                                                                        {{-- <th>Item Description</th>
+                                                                        <th>UoM</th>
+                                                                        <th>Quantity</th>
+                                                                        <th>Currency</th>
+                                                                        <th>Price</th>
+                                                                        <th>Depth</th>
+                                                                        <th>Parent</th> --}}
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @foreach ($tree as $key => $item)
+                                                                        @include('partials.tree_item_second', ['key' => $key, 'item' => $item])
+                                                                    @endforeach
+                                                                </tbody>
+                                                            </table>
+
                                                             <table class="table table-hover">
                                                                 <thead>
                                                                     <tr>
@@ -125,8 +159,7 @@
                                                                             <div class="p-0">
                                                                                 <table class="table table-hover">
                                                                                     <tbody>
-                                                                                        {{-- sub 2-1 --}}
-                                                                                        <tr data-widget="expandable-table" aria-expanded="false">
+                                                                                        <tr data-widget="expandable-table" aria-expanded="true">
                                                                                             <td>
                                                                                                 <i class="expandable-table-caret fas fa-caret-right fa-fw"></i>
                                                                                                 219-1
@@ -151,7 +184,6 @@
                                                                                                 </div>
                                                                                             </td>
                                                                                         </tr>
-                                                                                        {{-- akhir sub 2-1 --}}
                                                                                         <tr data-widget="expandable-table" aria-expanded="false">
                                                                                             <td>
                                                                                                 <button type="button" class="btn btn-primary p-0">
@@ -299,6 +331,8 @@
                 $('#btn-filter').click(function() {
                     var so_number = $('#filter_sono').val();
                     $('#treeview').html('');
+                    // $('#card-image').html('');
+                    $('#card-image').addClass('d-none');
                     // alert(item_code);
                     if (so_number != '') {
                         $('#socost-data').DataTable().destroy();
@@ -315,12 +349,134 @@
                     fill_sale_sorder();
                 });
 
+                function buildTree(array, parent) {
+                    var tree = [];
+
+                    for (var i = 0; i < array.length; i++) {
+                        if (array[i].parent === parent) {
+                            var children = buildTree(array, array[i].id);
+                            if (children.length) {
+                                array[i].nodes = children;
+                            }
+                            tree.push(array[i]);
+                        }
+                    }
+
+                    return tree;
+                }
+
+                var data = [{
+                        id: 'RK-J21067CRS1',
+                        ItemDescription: 'Rangka Juliette Rectangle Stool With Storage 42x21x42',
+                        parent: 'J21067CRS1-CN3B507PJW',
+                        BOMType: 'P',
+                        nodes: [{
+                                id: 'RKK-RW-J21067CRS1',
+                                ItemDescription: 'Rangka Kayu Manium/mungur/Afrika (Oven) Juliette Rectangle Stool With Storage Uk Jadi setelah coco 42x21x42(Pake Karton)',
+                                parent: 'RK-J21067CRS1',
+                                BOMType: 'N'
+                            },
+                            {
+                                id: 'LEM-FOX-PTH',
+                                ItemDescription: 'Lem Fox Putih 800gr (ktg orage)',
+                                parent: 'RK-J21067CRS1',
+                                BOMType: 'N'
+                            },
+                            {
+                                id: 'PW-3',
+                                ItemDescription: 'Ply wood 122x244x3 mm meranti,mc/palm (t=2.5-2.7mm)',
+                                parent: 'RK-J21067CRS1',
+                                BOMType: 'N'
+                            }
+                        ]
+                    },
+                    {
+                        id: 'RNDM-STOOL-DIA 40',
+                        ItemDescription: 'Rendam Stool Dia 40/Square Stool 42x42',
+                        parent: 'J21067CRS1-CN3B507PJW',
+                        BOMType: 'P',
+                        nodes: [{
+                                id: 'LNTRK',
+                                ItemDescription: 'Agenda 25 EC /1 ltr',
+                                parent: 'RNDM-STOOL-DIA 40',
+                                BOMType: 'N'
+                            },
+                            {
+                                id: 'LB-RNDM-STL-D40',
+                                ItemDescription: 'Rendam Stool Dia 40 /Square stool 42x42',
+                                parent: 'RNDM-STOOL-DIA 40',
+                                BOMType: 'N'
+                            }
+                        ]
+                    },
+                    {
+                        id: 'LBR-POP-STL',
+                        ItemDescription: 'Labur Pop Stool/goni stool/envi mosaic Stl/Asela stool',
+                        parent: 'J21067CRS1-CN3B507PJW',
+                        BOMType: 'P',
+                        nodes: [{
+                                id: 'LNTRK',
+                                ItemDescription: 'Agenda 25 EC /1 ltr',
+                                parent: 'LBR-POP-STL',
+                                BOMType: 'N'
+                            },
+                            {
+                                id: 'KUAS-2',
+                                ItemDescription: 'Kuas 2',
+                                parent: 'LBR-POP-STL',
+                                BOMType: 'N'
+                            },
+                            {
+                                id: 'SOLAR',
+                                ItemDescription: 'SOLAR',
+                                parent: 'LBR-POP-STL',
+                                BOMType: 'N'
+                            },
+                            {
+                                id: 'LB-LBR-POP-STL',
+                                ItemDescription: 'Labur Pop Stool/goni stool/emvi mosaic stool/asela stool',
+                                parent: 'LBR-POP-STL',
+                                BOMType: 'N'
+                            }
+                        ]
+                    }
+                ];
+
+                var treeviewData = buildTree(data, null);
+
+                function generateTreeView(data) {
+                    var html = '<ul>';
+
+                    for (var i = 0; i < data.length; i++) {
+                        html += '<li>';
+                        html += data[i].ItemDescription;
+
+                        if (data[i].nodes && data[i].nodes.length) {
+                            html += generateTreeView(data[i].nodes);
+                        }
+
+                        html += '</li>';
+                    }
+
+                    html += '</ul>';
+
+                    return html;
+                }
+
+                var treeview = generateTreeView(treeviewData);
+                console.log(treeview);
+
+
             });
 
 
 
             $(document).on('click', '.generate_bom', function() {
                 var item_code = $(this).data('id');
+
+                // $(this).closest('tr').addClass('removeRow');
+
+                $('#card-image').removeClass('d-none');
 
                 $.ajax({
                     url: "{{ route('cost-analysis.parent') }}",
@@ -330,6 +486,7 @@
                     },
                     dataType: 'json',
                     success: function(result) {
+                        load_picture(item_code)
                         $('#treeview').html(result);
                     },
                     error: function(xhr, textStatus, errorThrown) {
@@ -342,58 +499,19 @@
                 return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.')
             }
 
-            function fill_treeview(item_code) {
+            function load_picture(item_code) {
                 $.ajax({
-                    url: "{{ route('bom-treeview.show') }}",
-                    type: "POST",
+                    url: "{{ route('single-picture.load') }}",
+                    method: "POST",
                     data: {
-                        item_code: item_code,
+                        item_code: item_code
                     },
-                    dataType: 'json',
-                    success: function(result) {
-                        $('#treeview').treeview({
-                            data: getTree()
-                        });
-                    },
-                    error: function(xhr, textStatus, errorThrown) {
-                        console.log('Error: ' + errorThrown);
+                    dataType: "json",
+                    success: function(data) {
+                        // console.log(data.ItemPicture);
+                        $('#view-picture').html(data.ItemPicture);
                     }
-                });
-            }
-
-            function getTree() {
-                // Some logic to retrieve, or generate tree structure
-                var data = [{
-                        text: "Parent 1",
-                        nodes: [{
-                                text: "Child 1",
-                                nodes: [{
-                                        text: "Grandchild 1"
-                                    },
-                                    {
-                                        text: "Grandchild 2"
-                                    }
-                                ]
-                            },
-                            {
-                                text: "Child 2"
-                            }
-                        ]
-                    },
-                    {
-                        text: "Parent 2"
-                    },
-                    {
-                        text: "Parent 3"
-                    },
-                    {
-                        text: "Parent 4"
-                    },
-                    {
-                        text: "Parent 5"
-                    }
-                ];
-                return data;
+                })
             }
         </script>
     @endslot
