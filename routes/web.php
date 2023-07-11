@@ -45,9 +45,13 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('fetch_bill_of_material', [BomsapController::class, 'fetch_bill_of_material'])->name('get_bom');
     Route::post('bom/item_description', [BomsapController::class, 'show_item_description'])->name('bom-item.show');
 
-    Route::post('production/analysis_tree',  [CostAnalysisController::class, 'get_parent_bom'])->name('cost-analysis.parent');
+    Route::post('production/analysis_tree',  [CostAnalysisController::class, 'show_parent_bom'])->name('cost-analysis.show');
     Route::get('production/cost-analysis',  [CostAnalysisController::class, 'index'])->name('cost-analysis.index');
     Route::get('fetch_sales_order', [CostAnalysisController::class, 'fetch_sales_order'])->name('sales_order.fetch');
+    Route::get('production/cost-analysis/export-costAnalysis',  [CostAnalysisController::class, 'exportCostAnalysisData'])->name('costAnalysis.export');
+    Route::post('production/cost-analysis/export-costAnalysis',  [CostAnalysisController::class, 'exportCostAnalysisData'])->name('costAnalysis.export');
+    // Route::get('production/cost-analysis/export-bom',  [CostAnalysisController::class, 'exportBomData']);
+
 
     Route::post('api/load_single_picture',  [PictureController::class, 'load_single_picture'])->name('single-picture.load');
 });

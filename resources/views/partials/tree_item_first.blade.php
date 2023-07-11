@@ -1,3 +1,4 @@
+{{-- @if ($item->Depth == '2') --}}
 <tr @if ($item->BOMType === 'P') data-widget="expandable-table" aria-expanded="true" @endif>
     <td>
         @if ($item->BOMType === 'P')
@@ -14,6 +15,7 @@
     {{-- <td>{{ $item->Depth }}</td>
     <td>{{ $item->parent }}</td> --}}
 </tr>
+
 
 @foreach ($tree as $child)
     @if ($child->parent === $item->Item)

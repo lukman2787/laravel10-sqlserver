@@ -39,7 +39,7 @@
                         <div class="card-header p-0 border-bottom-0">
                             <ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
                                 <li class="nav-item">
-                                    <a class="nav-link active" id="custom-tabs-four-home-tab" data-toggle="pill" href="#custom-tabs-four-home" role="tab" aria-controls="custom-tabs-four-home" aria-selected="true">Tree View Cost Analysis</a>
+                                    <a class="nav-link active" id="custom-tabs-four-home-tab" data-toggle="pill" href="#custom-tabs-four-home" role="tab" aria-controls="custom-tabs-four-home" aria-selected="true">BoM Cost Analysis</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" id="custom-tabs-four-profile-tab" data-toggle="pill" href="#custom-tabs-four-profile" role="tab" aria-controls="custom-tabs-four-profile" aria-selected="false">Actual Cost</a>
@@ -84,6 +84,7 @@
                                                             <th>Dimension</th>
                                                             <th>Material</th>
                                                             <th>Color</th>
+                                                            <th><i class="fas fa-download"></i></th>
                                                         </tr>
                                                     </thead>
                                                 </table>
@@ -118,26 +119,6 @@
                                                             <h3 class="card-title"><span id=""></span></h3>
                                                         </div>
                                                         <div class="card-body p-0">
-                                                            <table class="table table-hover">
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th>Item</th>
-                                                                        {{-- <th>Item Description</th>
-                                                                        <th>UoM</th>
-                                                                        <th>Quantity</th>
-                                                                        <th>Currency</th>
-                                                                        <th>Price</th>
-                                                                        <th>Depth</th>
-                                                                        <th>Parent</th> --}}
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    @foreach ($tree as $key => $item)
-                                                                        @include('partials.tree_item_second', ['key' => $key, 'item' => $item])
-                                                                    @endforeach
-                                                                </tbody>
-                                                            </table>
-
                                                             <table class="table table-hover">
                                                                 <thead>
                                                                     <tr>
@@ -225,12 +206,9 @@
                                                                 </tbody>
                                                             </table>
                                                         </div>
-
                                                     </div>
-
                                                 </div>
                                             </div>
-
                                         </div>
                                         <!-- /.col -->
                                     </div>
@@ -320,10 +298,14 @@
                                 data: 'U_Color',
                                 name: 'U_Color'
                             },
+                            {
+                                data: 'DownloadAction',
+                                name: 'DownloadAction'
+                            },
                         ],
                         columnDefs: [{
                             targets: [-1],
-                            className: 'DT-left'
+                            className: 'DT-center'
                         }],
                     });
                 }
@@ -464,22 +446,18 @@
                 }
 
                 var treeview = generateTreeView(treeviewData);
-                console.log(treeview);
-
-
+                // console.log(treeview);
             });
 
 
 
             $(document).on('click', '.generate_bom', function() {
                 var item_code = $(this).data('id');
-
                 // $(this).closest('tr').addClass('removeRow');
-
                 $('#card-image').removeClass('d-none');
 
                 $.ajax({
-                    url: "{{ route('cost-analysis.parent') }}",
+                    url: "{{ route('cost-analysis.show') }}",
                     type: "POST",
                     data: {
                         item_code: item_code,
@@ -494,6 +472,37 @@
                     }
                 });
             });
+
+            $(document).on('click', '.downloadFile', function() {
+                var item_code = $(this).data('item');
+                console.log(item_code);
+                var data = {
+                    item_code: item_code,
+                }
+
+                var url = "{{ URL::to('production/cost-analysis/export-costAnalysis') }}?" + $.param(data)
+
+                window.location = url;
+                // $.ajax({
+                //     url: "{{ route('costAnalysis.export') }}",
+                //     type: "POST",
+                //     // dataType: "json",
+                //     data: {
+                //         item_code: item_code,
+                //     },
+                //     success: function(result) {
+                //         // window.location.href = result.file_url;
+                //         // alert(item_code)
+                //     },
+                //     error: function(xhr, textStatus, errorThrown) {
+                //         console.log('Error: ' + errorThrown);
+                //     }
+
+            });
+
+            function downloadFile(url) {
+                window.location.href = url;
+            }
 
             function formatNumber(num) {
                 return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.')
