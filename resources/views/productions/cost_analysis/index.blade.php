@@ -41,9 +41,9 @@
                                 <li class="nav-item">
                                     <a class="nav-link active" id="custom-tabs-four-home-tab" data-toggle="pill" href="#custom-tabs-four-home" role="tab" aria-controls="custom-tabs-four-home" aria-selected="true">BoM Cost Analysis</a>
                                 </li>
-                                <li class="nav-item">
+                                {{-- <li class="nav-item">
                                     <a class="nav-link" id="custom-tabs-four-profile-tab" data-toggle="pill" href="#custom-tabs-four-profile" role="tab" aria-controls="custom-tabs-four-profile" aria-selected="false">Actual Cost</a>
-                                </li>
+                                </li> --}}
                                 {{-- <li class="nav-item">
                                     <a class="nav-link" id="custom-tabs-four-messages-tab" data-toggle="pill" href="#custom-tabs-four-messages" role="tab" aria-controls="custom-tabs-four-messages" aria-selected="false"></a>
                                 </li> --}}
@@ -55,10 +55,10 @@
                         <div class="card-body">
                             <div class="tab-content" id="custom-tabs-four-tabContent">
                                 <div class="tab-pane fade show active" id="custom-tabs-four-home" role="tabpanel" aria-labelledby="custom-tabs-four-home-tab">
+
                                     <form class="form-inline">
                                         <div class="form-group mb-2">
-                                            <label for="" class="sr-only"></label>
-                                            <input type="text" readonly class="form-control-plaintext" id="" value="Select SO Number">
+                                            <label for="" class="text-muted">Select SO Number</label>
                                         </div>
                                         <div class="form-group mx-sm-3 mb-2">
                                             <label for="inputPassword2" class="sr-only">SO Number</label>
@@ -70,12 +70,49 @@
                                             </div>
                                         </div>
                                         <button type="button" class="btn btn-warning btn-sm mb-2" id="btn-reset"><i class="fas fa-sync fa-fw"></i></button>
+
+                                        <div class="col-lg-4">
+                                            <p>Update : {{ date('d F Y', strtotime(date('Y-m-d'))) }}</p>
+                                        </div>
                                     </form>
+                                    {{-- <div class="row">
+                                        <div class="col-lg-2">
+                                            <div class="form-group">
+                                                <label for="po_number">Select SO Number </label>
+                                                <select class="form-control select2" name="po_number_start" id="po_number_start" style="width: 100%;">
+                                                    <option value=""> All SO </option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-2">
+                                            <div class="form-group clearfix" style="margin-top:30px;">
+                                                <div class="icheck-primary d-inline">
+                                                    <input type="checkbox" name="onlyOpenPo" id="onlyOpenPo" class="check_open_only">
+                                                    <label for="onlyOpenPo">Only Open PO</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-2">
+                                            <div class="form-group">
+                                                <button type="button" class="btn bg-gradient-danger btn-sm" id="btn-reset-po" style="margin-top:28px">
+                                                    <i class="fas fa-sync fa-fw"></i>
+                                                </button>
+                                                <button type="submit" name="download_excel_po" id="download_excel_po" class="btn bg-gradient-info btn-sm" style="margin-top:28px">
+                                                    <i class="fas fa-file-excel"></i> To Excel
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div> --}}
                                     <div class="row">
-                                        <div class="col-xl-8">
+                                        <div class="col-xl-12">
                                             <div class="table-responsive">
                                                 <table id="socost-data" class="table table-sm table-bordered table-striped" cellspacing="0" style="width:100%">
                                                     <thead>
+                                                        <tr>
+                                                            <th colspan="7">Product Properties</th>
+                                                            <th colspan="4" class="text-center">Cost Analysis</th>
+                                                        </tr>
                                                         <tr>
                                                             <th>No</th>
                                                             <th>Item No</th>
@@ -84,13 +121,16 @@
                                                             <th>Dimension</th>
                                                             <th>Material</th>
                                                             <th>Color</th>
-                                                            <th><i class="fas fa-download"></i></th>
+                                                            <th>Plan Cost (BOM)</th>
+                                                            <th>Actual Cost</th>
+                                                            <th>Cost Diff</th>
+                                                            <th><i class="fas fa-download text-center"></i></th>
                                                         </tr>
                                                     </thead>
                                                 </table>
                                             </div>
                                         </div>
-                                        <div class="col-xl-4">
+                                        {{-- <div class="col-xl-4">
                                             <div id="card-image" class="d-none">
                                                 <div class="card-header">Item Picture</div>
                                                 <div class="card mb-2 bg-gradient-dark">
@@ -104,7 +144,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </div> --}}
                                         <!-- /.col -->
                                     </div>
                                     <div id="treeview"></div>
@@ -263,7 +303,7 @@
                     let table_data = $('#socost-data').DataTable({
                         processing: true,
                         serverSide: true,
-                        responsive: true,
+                        // responsive: true,
                         ajax: {
                             url: "{{ route('sales_order.fetch') }}",
                             data: {
@@ -297,6 +337,18 @@
                             {
                                 data: 'U_Color',
                                 name: 'U_Color'
+                            },
+                            {
+                                data: 'resume_plan_cost',
+                                name: 'resume_plan_cost'
+                            },
+                            {
+                                data: 'resume_actual_cost',
+                                name: 'resume_actual_cost'
+                            },
+                            {
+                                data: 'diff_cost',
+                                name: 'diff_cost'
                             },
                             {
                                 data: 'DownloadAction',

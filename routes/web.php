@@ -8,6 +8,7 @@ use App\Http\Controllers\CostAnalysisController;
 use App\Http\Controllers\PictureController;
 use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\TestingController;
 use App\Http\Controllers\UserController;
 
 /*
@@ -54,4 +55,7 @@ Route::group(['middleware' => ['auth']], function () {
 
 
     Route::post('api/load_single_picture',  [PictureController::class, 'load_single_picture'])->name('single-picture.load');
+
+    Route::get('testing/query_bom',  [TestingController::class, 'bom_component']);
+    Route::get('testing/bom_price',  [TestingController::class, 'bom_price']);
 });
