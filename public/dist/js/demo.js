@@ -13,10 +13,10 @@
   // custom menu active
   var path = location.pathname.split("/");
   var url = location.origin + "/" + path[1];
-  $("#sidebar-menu ul li a").each(function () {
+  $(".sidebar nav ul li a").each(function () {
     if ($(this).attr("href").indexOf(url) !== -1) {
       $(this).addClass("active").parent('li').addClass("active").parent('ul').slideDown(350)
-        .parent('li').children('a:first').addClass("active subdrop");
+        .parent('li').children('a:first').addClass("active");
     }
   });
 
@@ -28,6 +28,18 @@
   //     alert('You load AdminLTE\'s "demo.js", \nthis file is only created for testing purposes!')
   //   }
   // }, 1000)
+
+  $(function () {
+    $('.datatable').DataTable({
+      "paging": true,
+      "lengthChange": false,
+      "searching": false,
+      "ordering": true,
+      "info": true,
+      "autoWidth": false,
+      "responsive": true,
+    });
+  });
 
   function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1)

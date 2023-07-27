@@ -18,14 +18,8 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::leftJoin('employees as T1', 'users.employee_id', '=', 'T1.id')
-            // ->join('office_locations as T3', 'employees.location_id', '=', 'office_locations.location_id')
-            // ->join('departments as T2', 'designations.department_id', '=', 'departments.department_id')
-            // ->join('contract_type as T4', 'employees.contract_type', '=', 'contract_type.contract_type_id')
-            ->select('users.*', 'T1.id as id_employee', 'T1.employee_id', 'T1.profile_picture')
-            ->get();
+        $users = User::orderBy('id', 'ASC')->get();
         return view('users.index', [
-            'departments' => Departments::where('company_id', '1')->orderBy('department_id', 'asc')->get(),
             'users' => $users,
             'roles' => Role::orderBy('id', 'DESC')->get(),
         ]);
@@ -37,7 +31,6 @@ class UserController extends Controller
     public function create()
     {
         return view('users.create', [
-            'departments' => Departments::where('company_id', '1')->orderBy('department_id', 'asc')->get(),
             'roles' => Role::orderBy('id', 'asc')->get(),
         ]);
     }
@@ -52,7 +45,6 @@ class UserController extends Controller
             'username' => ['required', 'unique:users', 'alpha_num', 'min:3', 'max:25'],
             'email' => ['required', 'unique:users', 'email'],
             'password' => ['required', 'min:6', 'same:confirm-password'],
-            'employee_id' => ['required'],
             'roles' => ['required'],
         ]);
 
@@ -89,8 +81,8 @@ class UserController extends Controller
             'user' => $user,
             'roles' => $roles,
             'userRole' => $userRole,
-            'departments' => Departments::where('company_id', '1')->orderBy('department_id', 'asc')->get(),
         ]);
+
         // return view('users.edit', compact('user', 'roles', 'userRole'));
     }
 
@@ -104,7 +96,6 @@ class UserController extends Controller
             // 'username' => ['required', 'unique:users', 'alpha_num', 'min:3', 'max:25'] . $id,
             'email' => 'required|email|unique:users,email,' . $id,
             'password' => 'same:confirm-password',
-            'employee_id' => ['required'],
             'roles' => 'required'
         ]);
 

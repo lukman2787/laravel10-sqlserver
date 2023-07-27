@@ -29,8 +29,8 @@
             <td></td>
             <td>{{ $induk->ItemCode }}</td>
             <td>{{ $induk->ItemName }}</td>
-            <td>{{ $induk->EvalSystem }}</td>
-            <td>{{ $induk->BomType }}</td>
+            <td>{{ $induk->evalMethod }}</td>
+            <td>{{ $induk->TreeType }}</td>
             <td>{{ $induk->Quantity }}</td>
             <td>{{ $induk->UoM }}</td>
             <td>{{ $induk->BomPrice }}</td>

@@ -37,9 +37,16 @@ Route::middleware('guest')->group(function () {
 
 Route::group(['middleware' => ['auth']], function () {
     Route::get('/', fn () => view('dashboard'))->name('admin.page');
+
     Route::get('dashboard', fn () => view('dashboard'))->name('admin.page');
+
     Route::get('home', fn () => view('home'))->name('user.page');
+
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
+
+    Route::resource('roles', RoleController::class);
+
+    Route::resource('users', UserController::class);
 
     Route::get('production/bill_of_material',  [BomsapController::class, 'index'])->name('bom-sap.index');
     Route::post('fetch_bom_treeview', [BomsapController::class, 'show_bom_treeview'])->name('bom-treeview.show');

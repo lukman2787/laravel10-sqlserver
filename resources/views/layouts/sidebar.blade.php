@@ -65,7 +65,7 @@
                         </li>
                         <li class="nav-item">
                             <a href="{{ url('production/cost-analysis') }}" class="nav-link">
-                                <i class="far fa-sliders nav-icon"></i>
+                                <i class="fas fa-chart-line nav-icon"></i>
                                 <p>Cost Analysis </p>
                             </a>
                         </li>
@@ -81,23 +81,18 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="pages/mailbox/mailbox.html" class="nav-link">
+                            <a href="{{ route('users.index') }}" class="nav-link">
                                 <i class="far fa-user nav-icon"></i>
                                 <p>Users</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="pages/mailbox/compose.html" class="nav-link">
+                            <a href="{{ route('roles.index') }}" class="nav-link">
                                 <i class="fas fa-users nav-icon"></i>
-                                <p>Role </p>
+                                <p>Role & Permission </p>
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a href="pages/mailbox/read-mail.html" class="nav-link">
-                                <i class="fas fa-sign-in-alt nav-icon"></i>
-                                <p>Permission</p>
-                            </a>
-                        </li>
+
                     </ul>
                 </li>
             </ul>
