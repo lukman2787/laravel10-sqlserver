@@ -56,7 +56,7 @@
                             <div class="tab-content" id="custom-tabs-four-tabContent">
                                 <div class="tab-pane fade show active" id="custom-tabs-four-home" role="tabpanel" aria-labelledby="custom-tabs-four-home-tab">
 
-                                    <form class="form-inline">
+                                    {{-- <form class="form-inline">
                                         <div class="form-group mb-2">
                                             <label for="" class="text-muted">Select SO Number</label>
                                         </div>
@@ -74,44 +74,49 @@
                                         <div class="col-lg-4">
                                             <p>Update : {{ date('d F Y', strtotime(date('Y-m-d'))) }}</p>
                                         </div>
-                                    </form>
-                                    {{-- <div class="row">
+                                    </form> --}}
+
+                                    <div class="row">
                                         <div class="col-lg-2">
                                             <div class="form-group">
                                                 <label for="po_number">Select SO Number </label>
-                                                <select class="form-control select2" name="po_number_start" id="po_number_start" style="width: 100%;">
-                                                    <option value=""> All SO </option>
-                                                </select>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-lg-2">
-                                            <div class="form-group clearfix" style="margin-top:30px;">
-                                                <div class="icheck-primary d-inline">
-                                                    <input type="checkbox" name="onlyOpenPo" id="onlyOpenPo" class="check_open_only">
-                                                    <label for="onlyOpenPo">Only Open PO</label>
+                                                <div class="input-group input-group-sm">
+                                                    <input type="text" class="form-control" id="filter_sono">
+                                                    <span class="input-group-append">
+                                                        <button type="button" class="btn btn-info btn-flat" id="btn-filter"><i class="fas fa-search fa-fw"></i></button>
+                                                    </span>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="col-lg-2">
                                             <div class="form-group">
-                                                <button type="button" class="btn bg-gradient-danger btn-sm" id="btn-reset-po" style="margin-top:28px">
+                                                <button type="button" class="btn bg-gradient-danger btn-sm" id="btn-reset-po" style="margin-top:30px">
                                                     <i class="fas fa-sync fa-fw"></i>
                                                 </button>
-                                                <button type="submit" name="download_excel_po" id="download_excel_po" class="btn bg-gradient-info btn-sm" style="margin-top:28px">
+                                                <button type="submit" name="download_excel_po" id="download_excel_po" class="btn bg-gradient-success btn-sm" style="margin-top:30px">
                                                     <i class="fas fa-file-excel"></i> To Excel
                                                 </button>
                                             </div>
                                         </div>
-                                    </div> --}}
+                                        <div class="col-lg-2">
+                                        </div>
+                                        <div class="col-lg-2">
+                                            <div class="form-group clearfix" style="margin-top:30px;">
+                                                <div class="icheck-primary d-inline">
+                                                    <p>Price Update : {{ date('d F Y', strtotime(date('Y-m-d'))) }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div class="row">
                                         <div class="col-xl-12">
                                             <div class="table-responsive">
                                                 <table id="socost-data" class="table table-sm table-bordered table-striped" cellspacing="0" style="width:100%">
                                                     <thead>
                                                         <tr>
-                                                            <th colspan="7">Product Properties</th>
+                                                            <th colspan="7" class="text-center">Product Sales Properties</th>
                                                             <th colspan="4" class="text-center">Cost Analysis</th>
+                                                            <th colspan="4" class="text-center">GP Analysis</th>
                                                         </tr>
                                                         <tr>
                                                             <th>No</th>
@@ -124,7 +129,9 @@
                                                             <th>Plan Cost (BOM)</th>
                                                             <th>Actual Cost</th>
                                                             <th>Cost Diff</th>
-                                                            <th><i class="fas fa-download text-center"></i></th>
+                                                            <th class="text-center"><i class="fas fa-download"></i></th>
+                                                            <th class="text-center">Plan GP</th>
+                                                            <th class="text-center">Actual GP</th>
                                                         </tr>
                                                     </thead>
                                                 </table>
@@ -353,6 +360,14 @@
                             {
                                 data: 'DownloadAction',
                                 name: 'DownloadAction'
+                            },
+                            {
+                                data: 'plan_gp',
+                                name: 'plan_gp'
+                            },
+                            {
+                                data: 'actual_gp',
+                                name: 'actual_gp'
                             },
                         ],
                         columnDefs: [{

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Exports\CostAnalysisDataExport;
+use App\Exports\SaleAnalysisDataExport;
 use App\Exports\BillofMaterialExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Staudenmeir\LaravelCte\Eloquent\Builder;
@@ -26,7 +27,9 @@ class CostAnalysisController extends Controller
                     'T1.ItemCode',
                     'T1.Dscription',
                     'T1.Quantity',
-                    'T1.Quantity',
+                    'T1.Rate',
+                    'T1.Price',
+                    DB::raw("CASE WHEN T1.Rate='0' THEN CAST((T1.Price) AS INT) ELSE CAST((T1.Price * T1.Rate) AS INT) END AS PriceRate"),
                     DB::raw("LTRIM(RTRIM(REPLACE(REPLACE(REPLACE(T2.U_Dmsion, CHAR(9), ''), CHAR(10), ''), CHAR(13), ''))) as U_Dmsion"),
                     DB::raw("LTRIM(RTRIM(REPLACE(REPLACE(REPLACE(T2.U_Material, CHAR(9), ''), CHAR(10), ''), CHAR(13), ''))) as U_Material"),
                     DB::raw("LTRIM(RTRIM(REPLACE(REPLACE(REPLACE(T2.U_Color, CHAR(9), ''), CHAR(10), ''), CHAR(13), ''))) as U_Color"),
@@ -59,11 +62,6 @@ class CostAnalysisController extends Controller
                             ';
                     return $check_bom;
                 })
-                ->addColumn('qty_order', function ($row) {
-                    $qty_order = number_format($row->Quantity, 0);
-                    return $qty_order;
-                })
-
                 ->addColumn('qty_order', function ($row) {
                     $qty_order = number_format($row->Quantity, 0);
                     return $qty_order;
@@ -134,7 +132,45 @@ class CostAnalysisController extends Controller
                     return number_format($diff_cost, 2);
                 })
 
-                ->rawColumns(['ItemAction', 'resume_plan_cost', 'resume_actual_cost', 'diff_cost', 'DownloadAction'])
+                ->addColumn('plan_gp', function ($row) {
+                    $query_plan_cost = $this->getsummaryPlanCost($row->ItemCode);
+                    $plan_cost = $query_plan_cost->Price;
+                    $value_gp = $row->PriceRate - $plan_cost;
+                    $plan_gp = ($value_gp / $row->PriceRate) * 100;
+                    return number_format($plan_gp, 2) . '%';
+                })
+
+                ->addColumn('actual_gp', function ($row) {
+                    $query_actual_cost = $this->getsummaryActualCost($row->ItemCode);
+                    $groupedByParent = $query_actual_cost->where('parent', $row->ItemCode)->groupBy('parent');
+
+                    // Create an array to store the results
+                    $result = [];
+
+                    // Iterate through each depth level
+                    foreach ($groupedByParent as $parent => $items) {
+                        // Calculate the total value for this depth level
+                        $totalValue = $items->sum(function ($item) {
+                            return $item->qty * $item->AvgPrice;
+                        });
+
+                        // Store the total value in the result array
+                        $result[] = [
+                            'Parent' => $parent,
+                            'TotalValue' => $totalValue,
+                        ];
+                    }
+
+                    $actual_cost = 0;
+                    foreach ($result as $price_induk) {
+                        $actual_cost = $actual_cost + $price_induk['TotalValue'];
+                    }
+                    $value_gp = $row->PriceRate - $actual_cost;
+                    $actual_gp = ($value_gp / $row->PriceRate) * 100;
+                    return number_format($actual_gp, 2) . '%';
+                })
+
+                ->rawColumns(['ItemAction', 'resume_plan_cost', 'resume_actual_cost', 'diff_cost', 'DownloadAction', 'plan_gp', 'actual_gp'])
                 ->make(true);
         }
     }
@@ -345,10 +381,9 @@ class CostAnalysisController extends Controller
                                                 <td>' . $item->BOMType . '</td>
                                                 <td>' . number_format($item->qty, 4) . '</td>
                                                 <td>' . $item->UoM . '</td>
-                                                <td>' . number_format($item->Price, 2) . '</td>
-                                                <td>' . number_format($item->qty * $item->Price, 2) . '</td>
+                                                <td>' . ($item->BOMType == 'N' ? number_format($item->Price, 2) : '')  . '</td>
+                                                <td>' . ($item->BOMType == 'P' ? number_format($item->qty * $item->Price, 2) : '')  . '</td>
                                                 <td>' . number_format($item->ActualCostTotal, 0) . '</td>
-                                                
                                             </tr>';
         }
 
@@ -361,6 +396,40 @@ class CostAnalysisController extends Controller
                     </div>';
 
         return response()->json($output);
+    }
+
+    /** data to export summary sales analysis */
+    public function exportSummarySaleAnalysis(Request $request)
+    {
+        $data = DB::connection('sqlsrv')->table('ORDR as T0')
+            ->select(
+                'T0.DocNum',
+                'T1.ItemCode',
+                'T1.Dscription',
+                'T1.Quantity',
+                'T1.Rate',
+                'T1.Price',
+                DB::raw("CASE WHEN T1.Rate='0' THEN CAST((T1.Price) AS INT) ELSE CAST((T1.Price * T1.Rate) AS INT) END AS PriceRate"),
+                DB::raw("LTRIM(RTRIM(REPLACE(REPLACE(REPLACE(T2.U_Dmsion, CHAR(9), ''), CHAR(10), ''), CHAR(13), ''))) as U_Dmsion"),
+                DB::raw("LTRIM(RTRIM(REPLACE(REPLACE(REPLACE(T2.U_Material, CHAR(9), ''), CHAR(10), ''), CHAR(13), ''))) as U_Material"),
+                DB::raw("LTRIM(RTRIM(REPLACE(REPLACE(REPLACE(T2.U_Color, CHAR(9), ''), CHAR(10), ''), CHAR(13), ''))) as U_Color"),
+                DB::raw("CONVERT(varchar, T0.DocDate, 103) as DocDate"),
+                DB::raw("CONVERT(varchar, T0.DocDueDate, 103) as DocDueDate"),
+                'T0.CardCode',
+                'T0.NumAtCard'
+            )
+            ->join('RDR1 AS T1', 'T0.DocEntry', '=', 'T1.DocEntry')
+            ->join('OITM AS T2', 'T1.ItemCode', '=', 'T2.ItemCode')
+            ->where('T0.DocNum', $request->number_so)
+            ->where('T0.CANCELED', '<>', 'Y')
+            ->orderBy('T0.DocNum')
+            ->orderBy('T0.CardCode')
+            ->orderBy('T0.CardName')
+            ->orderBy('T0.NumAtCard', 'asc')
+            ->get();
+
+        $file_name = 'costAnalysis ' . $request->number_so . ' Tgl ' . date('d F Y', strtotime(date('Y-m-d'))) . '.xlsx';
+        return Excel::download(new SaleAnalysisDataExport($data), $file_name);
     }
 
     /** data to export excel */
@@ -394,8 +463,8 @@ class CostAnalysisController extends Controller
             $actual_cost_total = $actual_cost_total + $price_induk['TotalValue'];
         }
 
-        // dd($tree);
-        $file_name = 'costAnalysis ' . $request->item_code . '.xlsx';
+
+        $file_name = 'costAnalysis ' . $request->item_code . ' Tgl ' . date('d F Y', strtotime(date('Y-m-d'))) . '.xlsx';
         return Excel::download(new CostAnalysisDataExport($tree, $induk_tree, $actual_cost_total), $file_name);
     }
 

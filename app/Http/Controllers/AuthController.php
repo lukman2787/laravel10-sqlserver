@@ -17,8 +17,6 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-
-
         // $user = User::whereEmail($request->email);
 
         // $attributes = $request->validate([
@@ -29,7 +27,7 @@ class AuthController extends Controller
         $credentials = $request->only('username', 'password');
 
         if (Auth::attempt($credentials)) {
-            // return redirect('/dashboard')->with('success', 'You are now login');
+            return redirect('/dashboard')->with('success', 'You are now login');
 
             if (auth()->user()->role == 'User') {
                 return redirect()->route('user.page')->with('success', 'You are now login');

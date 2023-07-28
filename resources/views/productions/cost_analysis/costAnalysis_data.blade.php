@@ -16,7 +16,6 @@
             <th>Price</th>
             <th>Plan Cost (BOM)</th>
             <th>Actual Cost</th>
-
         </tr>
     </thead>
     <tbody>
@@ -33,7 +32,7 @@
             <td>{{ $induk->TreeType }}</td>
             <td>{{ $induk->Quantity }}</td>
             <td>{{ $induk->UoM }}</td>
-            <td>{{ $induk->BomPrice }}</td>
+            <td>{{ $induk->Price }}</td>
             <td>{{ $induk->Quantity * $induk->Price }}</td>
             <td>{{ $item_cost_total }}</td>
         </tr>
@@ -71,8 +70,8 @@
                 <td>{{ $Item->BOMType }}</td>
                 <td>{{ $Item->qty }}</td>
                 <td>{{ $Item->UoM }}</td>
-                <td>{{ $Item->Price }}</td>
-                <td>{{ $Item->qty * $Item->Price }}</td>
+                <td>{{ $Item->BOMType == 'N' ? $Item->Price : null }}</td>
+                <td>{{ $Item->BOMType == 'P' ? $Item->qty * $Item->Price : null }}</td>
                 <td>{{ $Item->ActualCostTotal }}</td>
             </tr>
 

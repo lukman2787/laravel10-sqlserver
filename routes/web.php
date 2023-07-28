@@ -36,7 +36,8 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::group(['middleware' => ['auth']], function () {
-    Route::get('/', fn () => view('dashboard'))->name('admin.page');
+    Route::get('/', fn () => view('dashboard'));
+    // Route::get('/dashboard', fn () => view('dashboard'))->name('admin.page');
 
     Route::get('dashboard', fn () => view('dashboard'))->name('admin.page');
 

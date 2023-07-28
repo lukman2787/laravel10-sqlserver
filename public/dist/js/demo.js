@@ -15,10 +15,16 @@
   var url = location.origin + "/" + path[1];
   $(".sidebar nav ul li a").each(function () {
     if ($(this).attr("href").indexOf(url) !== -1) {
-      $(this).addClass("active").parent('li').addClass("active").parent('ul').slideDown(350)
-        .parent('li').children('a:first').addClass("active");
+      $(this).addClass("active").parent('li').addClass("active").parent('ul')
+        .parent('li').addClass("menu-open").children('a:first').addClass("active");
     }
   });
+  /**
+  console.log(path);
+  console.log(location.pathname);
+  console.log(path[2]);
+  console.log(url);
+   */
 
 
   // setTimeout(function () {
