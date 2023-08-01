@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Exports\CostAnalysisDataExport;
-use App\Exports\SaleAnalysisDataExport;
+use App\Exports\SalesAnalysisDataExport;
 use App\Exports\BillofMaterialExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Staudenmeir\LaravelCte\Eloquent\Builder;
@@ -399,38 +399,7 @@ class CostAnalysisController extends Controller
     }
 
     /** data to export summary sales analysis */
-    public function exportSummarySaleAnalysis(Request $request)
-    {
-        $data = DB::connection('sqlsrv')->table('ORDR as T0')
-            ->select(
-                'T0.DocNum',
-                'T1.ItemCode',
-                'T1.Dscription',
-                'T1.Quantity',
-                'T1.Rate',
-                'T1.Price',
-                DB::raw("CASE WHEN T1.Rate='0' THEN CAST((T1.Price) AS INT) ELSE CAST((T1.Price * T1.Rate) AS INT) END AS PriceRate"),
-                DB::raw("LTRIM(RTRIM(REPLACE(REPLACE(REPLACE(T2.U_Dmsion, CHAR(9), ''), CHAR(10), ''), CHAR(13), ''))) as U_Dmsion"),
-                DB::raw("LTRIM(RTRIM(REPLACE(REPLACE(REPLACE(T2.U_Material, CHAR(9), ''), CHAR(10), ''), CHAR(13), ''))) as U_Material"),
-                DB::raw("LTRIM(RTRIM(REPLACE(REPLACE(REPLACE(T2.U_Color, CHAR(9), ''), CHAR(10), ''), CHAR(13), ''))) as U_Color"),
-                DB::raw("CONVERT(varchar, T0.DocDate, 103) as DocDate"),
-                DB::raw("CONVERT(varchar, T0.DocDueDate, 103) as DocDueDate"),
-                'T0.CardCode',
-                'T0.NumAtCard'
-            )
-            ->join('RDR1 AS T1', 'T0.DocEntry', '=', 'T1.DocEntry')
-            ->join('OITM AS T2', 'T1.ItemCode', '=', 'T2.ItemCode')
-            ->where('T0.DocNum', $request->number_so)
-            ->where('T0.CANCELED', '<>', 'Y')
-            ->orderBy('T0.DocNum')
-            ->orderBy('T0.CardCode')
-            ->orderBy('T0.CardName')
-            ->orderBy('T0.NumAtCard', 'asc')
-            ->get();
 
-        $file_name = 'costAnalysis ' . $request->number_so . ' Tgl ' . date('d F Y', strtotime(date('Y-m-d'))) . '.xlsx';
-        return Excel::download(new SaleAnalysisDataExport($data), $file_name);
-    }
 
     /** data to export excel */
     public function exportCostAnalysisData(Request $request)
@@ -466,6 +435,45 @@ class CostAnalysisController extends Controller
 
         $file_name = 'costAnalysis ' . $request->item_code . ' Tgl ' . date('d F Y', strtotime(date('Y-m-d'))) . '.xlsx';
         return Excel::download(new CostAnalysisDataExport($tree, $induk_tree, $actual_cost_total), $file_name);
+    }
+
+    /** data SO Price Summary to export excel */
+    public function exportSoPriceAnalysis(Request $request)
+    {
+        $soAnalystData = DB::connection('sqlsrv')->table('ORDR as T0')
+            ->select(
+                'T0.DocNum',
+                'T1.ItemCode',
+                'T1.Dscription',
+                'T1.Quantity',
+                'T1.Rate',
+                'T1.Price',
+                DB::raw("CASE WHEN T1.Rate='0' THEN CAST((T1.Price) AS INT) ELSE CAST((T1.Price * T1.Rate) AS INT) END AS PriceRate"),
+                DB::raw("LTRIM(RTRIM(REPLACE(REPLACE(REPLACE(T2.U_Dmsion, CHAR(9), ''), CHAR(10), ''), CHAR(13), ''))) as U_Dmsion"),
+                DB::raw("LTRIM(RTRIM(REPLACE(REPLACE(REPLACE(T2.U_Material, CHAR(9), ''), CHAR(10), ''), CHAR(13), ''))) as U_Material"),
+                DB::raw("LTRIM(RTRIM(REPLACE(REPLACE(REPLACE(T2.U_Color, CHAR(9), ''), CHAR(10), ''), CHAR(13), ''))) as U_Color"),
+                DB::raw("CONVERT(varchar, T0.DocDate, 103) as DocDate"),
+                DB::raw("CONVERT(varchar, T0.DocDueDate, 103) as DocDueDate"),
+                'T0.CardCode',
+                'T0.NumAtCard'
+            )
+            ->join('RDR1 AS T1', 'T0.DocEntry', '=', 'T1.DocEntry')
+            ->join('OITM AS T2', 'T1.ItemCode', '=', 'T2.ItemCode')
+            ->where('T0.DocNum', $request->so_number)
+            ->where('T0.CANCELED', '<>', 'Y')
+            ->orderBy('T0.DocNum')
+            ->orderBy('T0.CardCode')
+            ->orderBy('T0.CardName')
+            ->orderBy('T0.NumAtCard', 'asc')
+            ->get();
+
+        foreach ($soAnalystData as $key => $row) {
+            $query_plan_cost = $this->getsummaryPlanCost($row->ItemCode);
+            $plan_cost = number_format($query_plan_cost->Price, 2);
+        }
+
+        $file_name = 'Cost Analysis SO ' . $request->so_number . ' Update Tgl ' . date('d F Y', strtotime(date('Y-m-d'))) . '.xlsx';
+        return Excel::download(new SalesAnalysisDataExport($soAnalystData), $file_name);
     }
 
     private function getColumnName($lvl)

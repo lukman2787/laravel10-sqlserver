@@ -58,8 +58,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('production/cost-analysis',  [CostAnalysisController::class, 'index'])->name('cost-analysis.index');
     Route::get('fetch_sales_order', [CostAnalysisController::class, 'fetch_sales_order'])->name('sales_order.fetch');
     Route::get('production/cost-analysis/export-costAnalysis',  [CostAnalysisController::class, 'exportCostAnalysisData'])->name('costAnalysis.export');
-    Route::post('production/cost-analysis/export-costAnalysis',  [CostAnalysisController::class, 'exportCostAnalysisData'])->name('costAnalysis.export');
-    // Route::get('production/cost-analysis/export-bom',  [CostAnalysisController::class, 'exportBomData']);
+    Route::get('production/cost-analysis/export-soPriceAnalysis',  [CostAnalysisController::class, 'exportSoPriceAnalysis'])->name('costAnalysis.export');
 
 
     Route::post('api/load_single_picture',  [PictureController::class, 'load_single_picture'])->name('single-picture.load');

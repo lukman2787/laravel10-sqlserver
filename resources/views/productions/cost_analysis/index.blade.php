@@ -93,7 +93,7 @@
                                                 <button type="button" class="btn bg-gradient-danger btn-sm" id="btn-reset-po" style="margin-top:30px">
                                                     <i class="fas fa-sync fa-fw"></i>
                                                 </button>
-                                                <button type="submit" name="download_excel_po" id="download_excel_po" class="btn bg-gradient-success btn-sm" style="margin-top:30px">
+                                                <button type="button" name="soPriceAnalyst" id="soPriceAnalyst" class="btn bg-gradient-success btn-sm" style="margin-top:30px">
                                                     <i class="fas fa-file-excel"></i> To Excel
                                                 </button>
                                             </div>
@@ -388,7 +388,7 @@
                         fill_sales_order(so_number);
                         // fill_treeview(item_code)
                     } else {
-                        toastr.info("Select SO number");
+                        toastr.info("Select SO number, please");
                     }
                 });
 
@@ -542,7 +542,6 @@
 
             $(document).on('click', '.downloadFile', function() {
                 var item_code = $(this).data('item');
-                console.log(item_code);
                 var data = {
                     item_code: item_code,
                 }
@@ -550,20 +549,19 @@
                 var url = "{{ URL::to('production/cost-analysis/export-costAnalysis') }}?" + $.param(data)
 
                 window.location = url;
-                // $.ajax({
-                //     url: "{{ route('costAnalysis.export') }}",
-                //     type: "POST",
-                //     // dataType: "json",
-                //     data: {
-                //         item_code: item_code,
-                //     },
-                //     success: function(result) {
-                //         // window.location.href = result.file_url;
-                //         // alert(item_code)
-                //     },
-                //     error: function(xhr, textStatus, errorThrown) {
-                //         console.log('Error: ' + errorThrown);
-                //     }
+            });
+
+            $(document).on('click', '#soPriceAnalyst', function() {
+                var so_number = $('#filter_sono').val();
+                if (so_number != '') {
+                    var data = {
+                        so_number: so_number,
+                    }
+                    var url = "{{ URL::to('production/cost-analysis/export-soPriceAnalysis') }}?" + $.param(data)
+                    window.location = url;
+                } else {
+                    toastr.info("Select SO number, please");
+                }
 
             });
 
